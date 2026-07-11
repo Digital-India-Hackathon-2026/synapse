@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindMitra — Caregiver Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="linkScreen" class="link-screen">
+  <div class="link-card">
+    <div class="brand"><span class="mark">M</span><span>MindMitra</span></div>
+    <h1>Caregiver Dashboard</h1>
+    <p class="muted">Enter the pairing code the person shared with you to see their live location, once they've turned sharing on.</p>
+    <form id="linkForm">
+      <label>Your name<input type="text" id="cgName" placeholder="e.g. Priya" required></label>
+      <label>Relation<input type="text" id="cgRelation" placeholder="e.g. Daughter"></label>
+      <label>Phone<input type="tel" id="cgPhone" placeholder="+91…"></label>
+      <label>Pairing code<input type="text" id="cgCode" placeholder="6-digit code" maxlength="6" required></label>
+      <button type="submit" class="btn">Connect</button>
+    </form>
+    <p id="linkError" class="error"></p>
+  </div>
+</div>
+
+<div id="dashScreen" class="dash-screen" style="display:none;">
+  <header class="topbar">
+    <div class="brand"><span class="mark">M</span><span>MindMitra</span></div>
+    <div class="patient-chip">
+      <span id="patientName">—</span>
+      <span id="sharingStatus" class="status-dot"></span>
+    </div>
+    <button class="btn ghost" id="signOutBtn">Sign out</button>
+  </header>
+
+  <main class="dash-main">
+    <div id="map"></div>
+    <aside class="side-panel">
+      <h2>Live location</h2>
+      <p id="lastUpdate" class="muted">Waiting for a location update…</p>
+      <div id="offBanner" class="off-banner" style="display:none;">
+        This person currently has location sharing turned off. You'll see updates again as soon as they turn it back on — this is their choice to make.
+      </div>
+      <a id="openInMaps" class="btn secondary" target="_blank" style="display:none;">Open in Google Maps</a>
+    </aside>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindMitra AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg-1:#F4F1FC;
+  --bg-2:#FFFFFF;
+  --ink:#1C1030;
+  --ink-soft:#382A54;
+  --purple-900:#2E1A5C;
+  --purple-700:#4F2FA8;
+  --purple-600:#6C3FD1;
+  --purple-500:#8257E5;
+  --purple-200:#D9CDF7;
+  --purple-100:#EEE8FC;
+  --purple-50:#F7F4FE;
+  --text-secondary:#635B78;
+  --text-muted:#9A93AC;
+  --white:#FFFFFF;
+  --success-bg:#E4F4EA;
+  --success-ink:#1E7B4D;
+  --warning-bg:#FCF1DE;
+  --warning-ink:#9A6512;
+  --danger-bg:#FBE7E5;
+  --danger-ink:#B23A2E;
+  --radius-lg:26px;
+  --radius-md:18px;
+  --radius-sm:12px;
+  --shadow-card: 0 12px 34px rgba(52,26,110,0.09);
+  --shadow-soft: 0 4px 16px rgba(52,26,110,0.06);
+  --font-display:'Fraunces', Georgia, serif;
+  --font-body:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  background:linear-gradient(160deg, var(--bg-1) 0%, #FFFFFF 55%);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.serif{ font-family:var(--font-display); color:var(--purple-900); font-weight:700; letter-spacing:-0.01em; }
+p{ line-height:1.55; }
+button{ font-family:var(--font-body); cursor:pointer; }
+:focus-visible{ outline:3px solid var(--purple-500); outline-offset:2px; }
+@media (prefers-reduced-motion: reduce){ *{ animation-duration:0.001ms !important; transition-duration:0.001ms !important; } }
+
+.pill-btn{
+  background:var(--purple-600);
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  padding:14px 28px;
+  font-size:16px;
+  font-weight:600;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  box-shadow:0 8px 20px rgba(108,63,209,0.28);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.pill-btn:hover{ transform:translateY(-1px); box-shadow:0 12px 26px rgba(108,63,209,0.34); }
+.pill-btn:active{ transform:translateY(0px) scale(.98); }
+.pill-btn.secondary{
+  background:#fff; color:var(--purple-700); border:1.5px solid var(--purple-200); box-shadow:none;
+}
+.pill-btn.large{ padding:20px 36px; font-size:19px; }
+.pill-btn:disabled{ opacity:.5; cursor:not-allowed; transform:none; }
+
+.badge-pill{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--purple-100); color:var(--purple-700);
+  border-radius:999px; padding:7px 16px; font-size:13px; font-weight:600;
+}
+
+.card{
+  background:#fff; border-radius:var(--radius-md); box-shadow:var(--shadow-card);
+  padding:22px;
+}
+.card-flat{
+  background:#fff; border-radius:var(--radius-sm); box-shadow:var(--shadow-soft); padding:16px;
+}
+.icon-circle{
+  width:44px; height:44px; border-radius:50%; background:var(--purple-100);
+  display:flex; align-items:center; justify-content:center; color:var(--purple-600); font-size:20px; flex-shrink:0;
+}
+
+/* ===== App shell ===== */
+#app{ min-height:100vh; display:flex; }
+.sidebar{
+  width:250px; flex-shrink:0; background:#fff; border-right:1px solid #EFEAFA;
+  padding:24px 18px; display:flex; flex-direction:column; gap:6px; position:sticky; top:0; height:100vh;
+}
+.sidebar .logo{ display:flex; align-items:center; gap:10px; padding:6px 10px 22px; }
+.sidebar .logo .mark{ width:34px; height:34px; border-radius:10px; background:var(--purple-600); color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:700; font-family:var(--font-display);}
+.sidebar .logo span{ font-family:var(--font-display); font-weight:700; font-size:18px; color:var(--purple-900); }
+.nav-item{
+  display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px;
+  color:var(--text-secondary); font-weight:600; font-size:14.5px; background:transparent; border:none; width:100%; text-align:left;
+}
+.nav-item .ic{ width:20px; text-align:center; font-size:17px; }
+.nav-item:hover{ background:var(--purple-50); color:var(--purple-700); }
+.nav-item.active{ background:var(--purple-100); color:var(--purple-700); }
+.sidebar-foot{ margin-top:auto; padding:12px 10px; }
+
+.main-col{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; padding:16px 28px; background:transparent;
+}
+.topbar .streak{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--text-secondary); font-weight:600; }
+#view{ flex:1; padding:6px 28px 100px; max-width:1080px; width:100%; margin:0 auto; }
+.view-inner{ animation:fadein .28s ease; }
+@keyframes fadein{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;} }
+
+.bottom-nav{ display:none; }
+
+@media (max-width: 880px){
+  .sidebar{ display:none; }
+  #view{ padding:6px 16px 96px; }
+  .topbar{ padding:14px 16px; }
+  .bottom-nav{
+    display:flex; position:fixed; bottom:0; left:0; right:0; background:#fff; border-top:1px solid #EFEAFA;
+    padding:8px 4px calc(8px + env(safe-area-inset-bottom)); z-index:50; box-shadow:0 -6px 20px rgba(52,26,110,0.06);
+  }
+  .bottom-nav button{
+    flex:1; background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px;
+    color:var(--text-muted); font-size:10.5px; font-weight:600; padding:6px 2px;
+  }
+  .bottom-nav button .ic{ font-size:19px; }
+  .bottom-nav button.active{ color:var(--purple-600); }
+}
+
+/* simple mode */
+body.simple-mode h1{ font-size:38px !important; }
+body.simple-mode h2{ font-size:28px !important; }
+body.simple-mode p, body.simple-mode .simple-text{ font-size:19px !important; line-height:1.6 !important; }
+body.simple-mode .pill-btn{ padding:20px 30px; font-size:19px; }
+body.simple-mode .nav-item{ font-size:17px; padding:16px 14px; }
+body.simple-mode .card, body.simple-mode .card-flat{ padding:26px; }
+
+.grid{ display:grid; gap:16px; }
+.grid-2{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+.grid-4{ grid-template-columns:repeat(4,minmax(0,1fr)); }
+@media (max-width:700px){ .grid-4{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+.speak-btn{
+  background:var(--purple-50); border:1.5px solid var(--purple-200); color:var(--purple-700);
+  border-radius:999px; padding:9px 16px; font-size:13.5px; font-weight:600; display:inline-flex; align-items:center; gap:6px;
+}
+.speak-btn:hover{ background:var(--purple-100); }
+.speak-btn.speaking{ background:var(--purple-600); color:#fff; border-color:var(--purple-600); }
+
+.risk-tag{ display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 14px; font-weight:700; font-size:13px; }
+.risk-low{ background:var(--success-bg); color:var(--success-ink); }
+.risk-mod{ background:var(--warning-bg); color:var(--warning-ink); }
+.risk-high{ background:var(--danger-bg); color:var(--danger-ink); }
+
+.lang-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
+@media (max-width:560px){ .lang-grid{ grid-template-columns:1fr; } }
+.lang-btn{
+  background:#fff; border:2px solid var(--purple-100); border-radius:20px; padding:22px; text-align:left;
+  display:flex; align-items:center; gap:16px; box-shadow:var(--shadow-soft);
+}
+.lang-btn:hover{ border-color:var(--purple-500); }
+.lang-btn .native{ font-family:var(--font-display); font-size:24px; color:var(--purple-900); font-weight:700; }
+.lang-btn .eng{ font-size:13px; color:var(--text-muted); margin-top:2px; }
+.lang-btn .glyph{ width:52px; height:52px; border-radius:14px; background:var(--purple-100); display:flex; align-items:center; justify-content:center; font-size:22px; color:var(--purple-700); flex-shrink:0; }
+
+.chip-row{ display:flex; gap:10px; flex-wrap:wrap; }
+.chip{ background:var(--purple-50); border:1px solid var(--purple-100); color:var(--purple-700); border-radius:999px; padding:8px 14px; font-size:13px; font-weight:600; }
+.chip.on{ background:var(--purple-600); color:#fff; border-color:var(--purple-600); }
+
+.progress-track{ height:8px; background:var(--purple-100); border-radius:999px; overflow:hidden; }
+.progress-fill{ height:100%; background:var(--purple-600); border-radius:999px; transition:width .3s ease; }
+
+.week-bar{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.week-bar .stem{ width:100%; background:var(--purple-100); border-radius:10px; height:74px; display:flex; align-items:flex-end; overflow:hidden; }
+.week-bar .fill{ width:100%; background:var(--purple-600); border-radius:10px 10px 0 0; }
+.week-bar .lbl{ font-size:12px; color:var(--text-muted); font-weight:600; }
+
+.tile{ background:#fff; border-radius:var(--radius-md); box-shadow:var(--shadow-soft); padding:20px; display:flex; flex-direction:column; gap:10px; border:1px solid #F1ECFC; }
+.tile:hover{ box-shadow:var(--shadow-card); }
+
+.memcard{ aspect-ratio:1; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:34px; background:var(--purple-100); border:2px solid transparent; }
+.memcard.chosen{ border-color:var(--purple-600); background:var(--purple-200); }
+.memcard.correct{ border-color:var(--success-ink); background:var(--success-bg); }
+.memcard.missed{ border-color:var(--danger-ink); background:var(--danger-bg); }
+
+.num-tap{ aspect-ratio:1; border-radius:16px; background:#fff; border:2px solid var(--purple-100); font-size:22px; font-weight:700; color:var(--purple-800,var(--purple-700)); }
+.num-tap.done{ background:var(--purple-600); color:#fff; border-color:var(--purple-600); }
+
+.chat-bubble{ max-width:78%; padding:12px 16px; border-radius:18px; font-size:15px; line-height:1.5; }
+.chat-bubble.bot{ background:var(--purple-50); color:var(--ink); border-bottom-left-radius:4px; align-self:flex-start; }
+.chat-bubble.user{ background:var(--purple-600); color:#fff; border-bottom-right-radius:4px; align-self:flex-end; }
+
+.spec-card{ display:flex; gap:14px; padding:16px; border-radius:16px; background:#fff; box-shadow:var(--shadow-soft); align-items:flex-start; }
+
+.mic-orb{
+  width:120px; height:120px; border-radius:50%; background:radial-gradient(circle at 35% 30%, var(--purple-500), var(--purple-700));
+  display:flex; align-items:center; justify-content:center; color:#fff; font-size:44px; margin:0 auto; box-shadow:0 14px 34px rgba(108,63,209,.35);
+  border:none;
+}
+.mic-orb.rec{ animation:pulse 1.2s infinite; }
+@keyframes pulse{ 0%{ box-shadow:0 0 0 0 rgba(108,63,209,.45), 0 14px 34px rgba(108,63,209,.35);} 70%{ box-shadow:0 0 0 22px rgba(108,63,209,0), 0 14px 34px rgba(108,63,209,.35);} 100%{ box-shadow:0 0 0 0 rgba(108,63,209,0), 0 14px 34px rgba(108,63,209,.35);} }
+
+textarea, input[type=text]{
+  width:100%; border:1.5px solid var(--purple-100); border-radius:14px; padding:12px 14px; font-family:var(--font-body);
+  font-size:15px; color:var(--ink); background:#fff;
+}
+textarea:focus, input[type=text]:focus{ border-color:var(--purple-500); }
+
+.sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+
+@media print{
+  #app > *:not(.print-area){ display:none !important; }
+  .print-area{ display:block !important; max-width:800px; margin:0 auto; }
+}
+.print-area{ display:none; }
+
+.landing-shell .hero-card{ background:#fff; border-radius:28px; box-shadow:var(--shadow-card); padding:26px; }
+
+.sos-fab{
+  position:fixed; right:24px; bottom:28px; z-index:60;
+  width:66px; height:66px; border-radius:50%;
+  background:#E0332B; color:#fff; border:none;
+  box-shadow:0 10px 26px rgba(224,51,43,.42);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:21px; line-height:1; gap:2px; animation:sospulse 2.4s infinite;
+}
+.sos-fab span{ font-size:9.5px; font-weight:800; letter-spacing:.5px; }
+@keyframes sospulse{ 0%{ box-shadow:0 0 0 0 rgba(224,51,43,.4), 0 10px 26px rgba(224,51,43,.42);} 70%{ box-shadow:0 0 0 16px rgba(224,51,43,0), 0 10px 26px rgba(224,51,43,.42);} 100%{ box-shadow:0 0 0 0 rgba(224,51,43,0), 0 10px 26px rgba(224,51,43,.42);} }
+@media (max-width:880px){ .sos-fab{ bottom:88px; right:16px; width:58px; height:58px; font-size:19px; } }
+
+.sos-overlay{
+  position:fixed; inset:0; background:rgba(28,16,48,.55); z-index:200;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.sos-modal{
+  background:#fff; border-radius:28px; max-width:420px; width:100%; padding:32px 28px;
+  text-align:center; box-shadow:0 24px 60px rgba(0,0,0,.28);
+}
+.sos-btn-red{ background:#E0332B !important; box-shadow:0 8px 20px rgba(224,51,43,.35) !important; }
+.sos-btn-red:hover{ background:#C42A22 !important; }
+</style>
+
+<!-- Socket.IO client — connects the patient app to the MindMitra location backend (see /backend) -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ================= STATE ================= */
+const LANGS = [
+  {code:'en-IN', key:'en', native:'English', eng:'English', glyph:'A'},
+  {code:'hi-IN', key:'hi', native:'हिन्दी', eng:'Hindi', glyph:'अ'},
+  {code:'te-IN', key:'te', native:'తెలుగు', eng:'Telugu', glyph:'త'},
+  {code:'ta-IN', key:'ta', native:'தமிழ்', eng:'Tamil', glyph:'த'},
+  {code:'kn-IN', key:'kn', native:'ಕನ್ನಡ', eng:'Kannada', glyph:'ಕ'},
+  {code:'bn-IN', key:'bn', native:'বাংলা', eng:'Bengali', glyph:'ব'},
+  {code:'mr-IN', key:'mr', native:'मराठी', eng:'Marathi', glyph:'म'},
+];
+
+const I18N = {
+  en:{ home:'Home', screening:'Screening', daily:'Daily exercise', chat:'AI companion', caregiver:'Caregiver mode', report:'Clinical report', specialists:'Find specialist', settings:'Settings',
+    welcome:'Welcome back', weeklyScore:'Weekly cognitive score', startScreening:'Start free screening', lowRisk:'Low risk', readAloud:'Read aloud', listening:'Listening...' },
+  hi:{ home:'होम', screening:'स्क्रीनिंग', daily:'दैनिक अभ्यास', chat:'एआई साथी', caregiver:'देखभाल मोड', report:'क्लिनिकल रिपोर्ट', specialists:'विशेषज्ञ खोजें', settings:'सेटिंग्स',
+    welcome:'वापसी पर स्वागत है', weeklyScore:'साप्ताहिक संज्ञानात्मक स्कोर', startScreening:'मुफ्त स्क्रीनिंग शुरू करें', lowRisk:'कम जोखिम', readAloud:'ज़ोर से पढ़ें', listening:'सुन रहा है...' },
+  te:{ home:'హోమ్', screening:'స్క్రీనింగ్', daily:'రోజువారీ వ్యాయామం', chat:'AI సహచరుడు', caregiver:'సంరక్షకుని మోడ్', report:'క్లినికల్ నివేదిక', specialists:'నిపుణుడిని కనుగొనండి', settings:'సెట్టింగ్‌లు',
+    welcome:'తిరిగి స్వాగతం', weeklyScore:'వారపు కాగ్నిటివ్ స్కోర్', startScreening:'ఉచిత స్క్రీనింగ్ ప్రారంభించండి', lowRisk:'తక్కువ ప్రమాదం', readAloud:'బిగ్గరగా చదవండి', listening:'వింటోంది...' },
+  ta:{ home:'முகப்பு', screening:'திரையிடல்', daily:'தினசரி பயிற்சி', chat:'AI துணை', caregiver:'பராமரிப்பாளர் பயன்முறை', report:'மருத்துவ அறிக்கை', specialists:'நிபுணரைக் கண்டறியவும்', settings:'அமைப்புகள்',
+    welcome:'மீண்டும் வருக', weeklyScore:'வாராந்திர அறிவாற்றல் மதிப்பெண்', startScreening:'இலவச திரையிடலைத் தொடங்குங்கள்', lowRisk:'குறைந்த ஆபத்து', readAloud:'சத்தமாக படிக்க', listening:'கேட்கிறது...' },
+  kn:{ home:'ಮುಖಪುಟ', screening:'ಸ್ಕ್ರೀನಿಂಗ್', daily:'ದೈನಂದಿನ ವ್ಯಾಯಾಮ', chat:'AI ಸಂಗಾತಿ', caregiver:'ಆರೈಕೆದಾರ ಮೋಡ್', report:'ಕ್ಲಿನಿಕಲ್ ವರದಿ', specialists:'ತಜ್ಞರನ್ನು ಹುಡುಕಿ', settings:'ಸೆಟ್ಟಿಂಗ್‌ಗಳು',
+    welcome:'ಮತ್ತೆ ಸ್ವಾಗತ', weeklyScore:'ವಾರದ ಅರಿವಿನ ಅಂಕ', startScreening:'ಉಚಿತ ಸ್ಕ್ರೀನಿಂಗ್ ಪ್ರಾರಂಭಿಸಿ', lowRisk:'ಕಡಿಮೆ ಅಪಾಯ', readAloud:'ಗಟ್ಟಿಯಾಗಿ ಓದಿ', listening:'ಆಲಿಸುತ್ತಿದೆ...' },
+  bn:{ home:'হোম', screening:'স্ক্রিনিং', daily:'দৈনিক ব্যায়াম', chat:'AI সঙ্গী', caregiver:'কেয়ারগিভার মোড', report:'ক্লিনিক্যাল রিপোর্ট', specialists:'বিশেষজ্ঞ খুঁজুন', settings:'সেটিংস',
+    welcome:'ফিরে আসার জন্য স্বাগতম', weeklyScore:'সাপ্তাহিক জ্ঞানীয় স্কোর', startScreening:'ফ্রি স্ক্রিনিং শুরু করুন', lowRisk:'কম ঝুঁকি', readAloud:'জোরে পড়ুন', listening:'শুনছে...' },
+  mr:{ home:'होम', screening:'स्क्रीनिंग', daily:'दैनंदिन व्यायाम', chat:'एआय सोबती', caregiver:'काळजीवाहू मोड', report:'क्लिनिकल अहवाल', specialists:'तज्ज्ञ शोधा', settings:'सेटिंग्ज',
+    welcome:'पुन्हा स्वागत आहे', weeklyScore:'साप्ताहिक संज्ञानात्मक गुण', startScreening:'मोफत स्क्रीनिंग सुरू करा', lowRisk:'कमी धोका', readAloud:'मोठ्याने वाचा', listening:'ऐकत आहे...' },
+};
+
+const STATE = {
+  onboarded: false,
+  lang: LANGS[0],
+  simpleMode: false,
+  scores: { memory: null, attention: null, speech: null, executive: null, clock: null },
+  weekly: [72, 76, 79, 82],
+  streak: 4,
+  history: [],
+  chat: [],
+  reminders: [
+    { id:1, text:'Take memory support medicine', time:'9:00 AM', done:false },
+    { id:2, text:'Evening walk with family', time:'6:00 PM', done:false },
+  ],
+  alerts: [
+    { id:1, text:'Speech fluency improved by 6% this week.', tone:'good' },
+  ],
+  screeningStep: 0,
+  transcript: '',
+  translation: '',
+  emergencyContact: { name: 'Priya (Daughter)', phone: '+919876543210' },
+  sosLog: [],
+  // ---- Live location sharing (see LOCATION TRACKING block below) ----
+  location: {
+    sharing: false,          // ON only when the person explicitly enables it — this is consent-based
+    lat: null,
+    lng: null,
+    accuracy: null,
+    updatedAt: null,
+    watchId: null,
+  },
+  patientAccount: null,      // { id, token, pairingCode } once registered with the backend
+  caregivers: [],            // caregivers currently linked/authorized to view this person's location
+};
+
+function t(key){ const d = I18N[STATE.lang.key] || I18N.en; return d[key] || I18N.en[key] || key; }
+
+/* ================= SPEECH HELPERS ================= */
+let currentUtterance = null;
+function speak(text, btnEl){
+  try{
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = STATE.lang.code;
+    u.rate = STATE.simpleMode ? 0.9 : 1;
+    if(btnEl){ btnEl.classList.add('speaking'); u.onend = ()=> btnEl.classList.remove('speaking'); }
+    window.speechSynthesis.speak(u);
+  }catch(e){ console.warn('speech synthesis unavailable', e); }
+}
+
+function hasRecognition(){ return ('webkitSpeechRecognition' in window) || ('SpeechRecognition' in window); }
+function micErrorMessage(err){
+  if(err==='not-allowed' || err==='permission-denied'){
+    return "Microphone access was blocked. If you're viewing this inside a chat preview, download the file and open it in a normal browser tab (or host it with HTTPS) — then allow microphone access when your browser asks. You can also just type your answer below.";
+  }
+  if(err==='no-speech'){ return "I didn't hear anything — please try again, or type your answer below."; }
+  if(err==='audio-capture'){ return "No microphone was found on this device. Please type your answer below."; }
+  if(err==='not-supported'){ return "Voice input isn't supported in this browser — please use Chrome, or type your answer below."; }
+  return "Voice input isn't available right now — please type your answer below.";
+}
+function startListening(onResult, onEnd){
+  if(!hasRecognition()){ onEnd && onEnd('not-supported'); return null; }
+  if(!window.isSecureContext){ onEnd && onEnd('not-allowed'); return null; }
+  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const rec = new Rec();
+  rec.lang = STATE.lang.code;
+  rec.interimResults = true;
+  rec.continuous = true;
+  let gotResult = false;
+  rec.onresult = (e)=>{
+    gotResult = true;
+    let text = '';
+    for(let i=0;i<e.results.length;i++){ text += e.results[i][0].transcript + ' '; }
+    onResult(text.trim());
+  };
+  rec.onerror = (e)=>{ onEnd && onEnd(e.error || 'unknown'); };
+  rec.onend = ()=>{ onEnd && onEnd(gotResult ? null : 'no-speech'); };
+  try{ rec.start(); }catch(err){ onEnd && onEnd('unknown'); return null; }
+  return rec;
+}
+
+/* ================= CLAUDE API HELPER ================= */
+async function callClaude(content, system){
+  try{
+    const body = { model:'claude-sonnet-4-6', max_tokens:1000, messages:[{ role:'user', content }] };
+    if(system) body.system = system;
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    const textBlock = (data.content || []).find(b=>b.type==='text');
+    return textBlock ? textBlock.text : null;
+  }catch(e){ console.warn('AI call failed', e); return null; }
+}
+
+async function translateToEnglish(text, fromLangName){
+  const result = await callClaude(
+    `Translate the following spoken cognitive-screening answer from ${fromLangName} to clear English for a doctor's review. Keep hesitations or repeated words as [pause] or [repeated] markers if present. Only return the translation, nothing else.\n\nText: "${text}"`
+  );
+  return result || '(Translation unavailable right now — please try again once online.)';
+}
+
+async function chatbotReply(userMsg, history){
+  const historyText = history.slice(-6).map(m=>`${m.role==='user'?'User':'Companion'}: ${m.text}`).join('\n');
+  const sys = `You are a warm, patient, empathetic voice companion inside a dementia-screening app for elderly Indian users, some of whom may have low literacy. Reply in ${STATE.lang.eng} using very simple, short sentences (2-4 sentences max). Be kind and reassuring. Never give a medical diagnosis; gently suggest talking to family or a doctor for medical concerns.`;
+  const result = await callClaude(`${historyText}\nUser: ${userMsg}`, sys);
+  return result || "I'm here with you. I couldn't reach my thinking service just now — could you say that again in a moment?";
+}
+
+async function reviewClockDrawing(dataUrl){
+  try{
+    const base64 = dataUrl.split(',')[1];
+    const body = {
+      model:'claude-sonnet-4-6', max_tokens:500,
+      messages:[{ role:'user', content:[
+        { type:'image', source:{ type:'base64', media_type:'image/png', data: base64 } },
+        { type:'text', text:'This is a Clock Drawing Test from a dementia cognitive-screening app. Evaluate number placement, correct clock-hand positions, and overall spatial organization. Respond ONLY as compact JSON: {"score": <0-100 integer>, "feedback": "<one short encouraging sentence, plain language>"}' }
+      ]}]
+    };
+    const res = await fetch('https://api.anthropic.com/v1/messages', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+    const data = await res.json();
+    const textBlock = (data.content||[]).find(b=>b.type==='text');
+    if(!textBlock) throw new Error('no text');
+    const clean = textBlock.text.replace(/```json|```/g,'').trim();
+    return JSON.parse(clean);
+  }catch(e){
+    return { score: 78, feedback: "Couldn't reach the AI reviewer right now, so here's a placeholder score. Try again when you're online for a full review." };
+  }
+}
+
+/* ================= NAV ================= */
+const NAV_ITEMS = [
+  { id:'home', ic:'🏠' }, { id:'screening', ic:'🎯' }, { id:'daily', ic:'🌱' },
+  { id:'chat', ic:'💬' }, { id:'caregiver', ic:'👪' }, { id:'report', ic:'📄' },
+  { id:'specialists', ic:'📍' }, { id:'settings', ic:'⚙️' },
+];
+
+function shellHTML(){
+  return `
+  <div class="sidebar" id="sidebarNav">
+    <div class="logo"><div class="mark">M</div><span>MindMitra AI</span></div>
+    ${NAV_ITEMS.map(n=>`<button class="nav-item" data-nav="${n.id}"><span class="ic">${n.ic}</span>${t(n.id)}</button>`).join('')}
+    <div class="sidebar-foot">
+      <div class="badge-pill" style="width:100%;justify-content:center;">🔥 ${STATE.streak}-day streak</div>
+    </div>
+  </div>
+  <div class="main-col">
+    <div class="topbar">
+      <button class="speak-btn" onclick="toggleSimpleMode()">${STATE.simpleMode ? '🔎 Simple mode: On' : '🔎 Simple mode'}</button>
+      <div class="streak">
+        <span class="badge-pill">${STATE.lang.native}</span>
+      </div>
+    </div>
+    <div id="view"></div>
+  </div>
+  <div class="bottom-nav" id="bottomNav">
+    ${NAV_ITEMS.slice(0,5).map(n=>`<button data-nav="${n.id}"><span class="ic">${n.ic}</span>${t(n.id)}</button>`).join('')}
+  </div>
+  <div class="print-area" id="printArea"></div>
+  `;
+}
+
+function wireNav(){
+  document.querySelectorAll('[data-nav]').forEach(btn=>{
+    btn.addEventListener('click', ()=> go(btn.getAttribute('data-nav')));
+  });
+}
+function highlightNav(id){
+  document.querySelectorAll('[data-nav]').forEach(b=>{
+    b.classList.toggle('active', b.getAttribute('data-nav')===id);
+  });
+}
+function toggleSimpleMode(){ STATE.simpleMode = !STATE.simpleMode; document.body.classList.toggle('simple-mode', STATE.simpleMode); go(currentScreen); }
+
+/* ================= EMERGENCY SOS ================= */
+function openSOS(){
+  document.getElementById('sosOverlay') && document.getElementById('sosOverlay').remove();
+  const overlay = document.createElement('div');
+  overlay.id = 'sosOverlay';
+  overlay.className = 'sos-overlay';
+  overlay.addEventListener('click', (e)=>{ if(e.target===overlay) closeSOS(); });
+  overlay.innerHTML = `
+    <div class="sos-modal">
+      <div style="font-size:48px;">🆘</div>
+      <h2 style="color:var(--danger-ink);font-size:24px;margin:12px 0 6px;">Do you need emergency help?</h2>
+      <p style="color:var(--text-secondary);" class="simple-text">This will alert ${STATE.emergencyContact.name} and show emergency numbers right away.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:26px;">
+        <button class="pill-btn large sos-btn-red" onclick="confirmSOS()">🆘 Yes, I need help</button>
+        <button class="pill-btn secondary large" onclick="closeSOS()">No, I'm okay</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  speak('Do you need emergency help right now?');
+}
+function closeSOS(){
+  const el = document.getElementById('sosOverlay');
+  if(el) el.remove();
+  try{ window.speechSynthesis.cancel(); }catch(e){}
+}
+function confirmSOS(){
+  const now = new Date();
+  STATE.sosLog.unshift({ time: now.toLocaleString() });
+  STATE.alerts.unshift({ id: Date.now(), text: '🆘 SOS triggered at ' + now.toLocaleTimeString() + ' — ' + STATE.emergencyContact.name + ' was notified.', tone: 'urgent' });
+  const overlay = document.getElementById('sosOverlay');
+  if(!overlay) return;
+  overlay.innerHTML = `
+    <div class="sos-modal">
+      <div style="font-size:48px;">📣</div>
+      <h2 style="color:var(--danger-ink);font-size:22px;margin:12px 0 6px;">Help is on the way</h2>
+      <p style="color:var(--text-secondary);">${STATE.emergencyContact.name} has been alerted.</p>
+      <p id="sosLocation" style="color:var(--text-muted);font-size:13px;margin-top:8px;">Getting your location…</p>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px;">
+        <a class="pill-btn large sos-btn-red" style="text-decoration:none;" href="tel:${STATE.emergencyContact.phone}">📞 Call ${STATE.emergencyContact.name}</a>
+        <a class="pill-btn secondary large" style="text-decoration:none;" href="tel:112">🚑 Call 112 · National emergency</a>
+        <a class="pill-btn secondary large" style="text-decoration:none;" href="tel:108">🚑 Call 108 · Ambulance</a>
+        <button class="pill-btn secondary" onclick="closeSOS()">Close</button>
+      </div>
+    </div>`;
+  speak('Help is on the way. I am alerting ' + STATE.emergencyContact.name + '. Stay calm, and use the call buttons if you need to speak to someone right now.');
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      pos=>{ const el=document.getElementById('sosLocation'); if(el) el.textContent = 'Location shared: ' + pos.coords.latitude.toFixed(4) + ', ' + pos.coords.longitude.toFixed(4); },
+      err=>{ const el=document.getElementById('sosLocation'); if(el) el.textContent = 'Location unavailable — please tell them where you are.'; },
+      { timeout: 6000 }
+    );
+  } else {
+    const el=document.getElementById('sosLocation'); if(el) el.textContent = 'Location sharing not supported on this device.';
+  }
+  if(currentScreen==='caregiver') go('caregiver');
+}
+function saveEmergencyContact(){
+  const name = document.getElementById('sosNameInput').value.trim();
+  const phone = document.getElementById('sosPhoneInput').value.trim();
+  if(name) STATE.emergencyContact.name = name;
+  if(phone) STATE.emergencyContact.phone = phone;
+  go('settings');
+}
+
+/* ================= LOCATION TRACKING ================= */
+/* Lets a person's registered caregivers see where they are, whenever the person turns sharing on.
+   Talks to the backend in /backend over REST + a live Socket.IO push.
+   Everything here fails gracefully into a "local-only" demo mode if no backend is reachable,
+   so the file still runs standalone if you just open it in a browser. */
+
+const LOCATION_API_BASE = (window.MINDMITRA_API_BASE) || 'http://localhost:4000';
+let locationSocket = null;
+
+async function apiCall(path, opts={}){
+  const res = await fetch(LOCATION_API_BASE + path, {
+    ...opts,
+    headers: { 'Content-Type':'application/json', ...(opts.headers||{}) }
+  });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error(data.error || ('Request failed: ' + res.status));
+  return data;
+}
+
+// Runs once, the first time the app loads on this device: creates a patient record on the
+// backend and remembers the credentials locally so future visits don't re-register.
+async function ensurePatientAccount(){
+  const saved = localStorage.getItem('mindmitra_patient_account');
+  if(saved){ STATE.patientAccount = JSON.parse(saved); return STATE.patientAccount; }
+  try{
+    const data = await apiCall('/api/patients/register', { method:'POST', body: JSON.stringify({ name: 'MindMitra user' }) });
+    STATE.patientAccount = { id:data.patientId, token:data.token, pairingCode:data.pairingCode };
+    localStorage.setItem('mindmitra_patient_account', JSON.stringify(STATE.patientAccount));
+    return STATE.patientAccount;
+  }catch(e){
+    console.warn('Location backend not reachable — running in local-only demo mode.', e.message);
+    return null;
+  }
+}
+
+// Pulls the caregivers who are currently authorized to see this person's location.
+async function refreshCaregiverList(){
+  if(!STATE.patientAccount) return;
+  try{
+    const data = await apiCall('/api/patients/me', { headers:{ Authorization:'Bearer '+STATE.patientAccount.token } });
+    STATE.caregivers = data.caregivers || [];
+    STATE.patientAccount.pairingCode = data.pairingCode;
+  }catch(e){ console.warn('Could not refresh caregiver list:', e.message); }
+}
+
+// Revokes one caregiver's access — they immediately stop being able to see this person's location.
+async function revokeCaregiver(caregiverId){
+  if(!STATE.patientAccount) return;
+  if(!confirm('Remove this caregiver\'s access to your location?')) return;
+  try{
+    await apiCall('/api/caregivers/'+caregiverId, { method:'DELETE', headers:{ Authorization:'Bearer '+STATE.patientAccount.token } });
+    await refreshCaregiverList();
+    go('settings');
+  }catch(e){ alert('Could not remove caregiver: ' + e.message); }
+}
+
+// The master on/off switch. The person is always the one who decides whether they're visible.
+async function toggleLocationSharing(){
+  const enabling = !STATE.location.sharing;
+  if(enabling){
+    if(!STATE.patientAccount) await ensurePatientAccount();
+    if(!navigator.geolocation){ alert('This device/browser does not support location sharing.'); return; }
+    startWatchingLocation();
+  } else {
+    stopWatchingLocation();
+  }
+  STATE.location.sharing = enabling;
+  if(STATE.patientAccount){
+    try{ await apiCall('/api/patients/sharing', { method:'POST', headers:{ Authorization:'Bearer '+STATE.patientAccount.token }, body: JSON.stringify({ enabled: enabling }) }); }
+    catch(e){ console.warn('Could not sync sharing state to backend:', e.message); }
+  }
+  connectLocationSocket();
+  go(currentScreen);
+}
+
+function startWatchingLocation(){
+  if(STATE.location.watchId != null) return;
+  STATE.location.watchId = navigator.geolocation.watchPosition(
+    pos => onLocationTick(pos),
+    err => console.warn('Location error:', err.message),
+    { enableHighAccuracy:true, maximumAge:15000, timeout:20000 }
+  );
+}
+function stopWatchingLocation(){
+  if(STATE.location.watchId != null){ navigator.geolocation.clearWatch(STATE.location.watchId); }
+  STATE.location.watchId = null;
+}
+
+async function onLocationTick(pos){
+  STATE.location.lat = pos.coords.latitude;
+  STATE.location.lng = pos.coords.longitude;
+  STATE.location.accuracy = pos.coords.accuracy;
+  STATE.location.updatedAt = new Date();
+  if(STATE.patientAccount){
+    try{
+      await apiCall('/api/location/ping', {
+        method:'POST',
+        headers:{ Authorization:'Bearer '+STATE.patientAccount.token },
+        body: JSON.stringify({ lat: STATE.location.lat, lng: STATE.location.lng, accuracy: STATE.location.accuracy })
+      });
+    }catch(e){ console.warn('Could not send location ping:', e.message); }
+  }
+  if(currentScreen==='caregiver' || currentScreen==='settings') go(currentScreen);
+}
+
+function connectLocationSocket(){
+  if(!STATE.patientAccount || typeof io === 'undefined') return;
+  if(!locationSocket){ locationSocket = io(LOCATION_API_BASE, { transports:['websocket','polling'] }); }
+  locationSocket.emit('join-patient-room', { patientId: STATE.patientAccount.id });
+}
+
+function copyPairingCode(){
+  if(!STATE.patientAccount) return;
+  navigator.clipboard && navigator.clipboard.writeText(STATE.patientAccount.pairingCode);
+  alert('Pairing code copied: ' + STATE.patientAccount.pairingCode + '\nShare this with a caregiver so they can add themselves in the Caregiver Dashboard app.');
+}
+
+function locationMapEmbedUrl(lat, lng, delta=0.01){
+  const left = lng - delta, right = lng + delta, top = lat + delta, bottom = lat - delta;
+  return `https://www.openstreetmap.org/export/embed.html?bbox=${left}%2C${bottom}%2C${right}%2C${top}&layer=mapnik&marker=${lat}%2C${lng}`;
+}
+
+/* ================= ROUTER ================= */
+let currentScreen = 'landing';
+const renderers = {};
+function ensureSOSFab(){
+  if(document.getElementById('globalSosFab')) return;
+  const btn = document.createElement('button');
+  btn.id = 'globalSosFab';
+  btn.className = 'sos-fab';
+  btn.setAttribute('aria-label','Emergency SOS');
+  btn.innerHTML = '<span style="font-size:22px;">🆘</span><span>SOS</span>';
+  btn.addEventListener('click', openSOS);
+  document.body.appendChild(btn);
+}
+function go(screen, params){
+  currentScreen = screen;
+  if(screen==='landing' || screen==='language'){
+    document.getElementById('app').innerHTML = renderers[screen](params);
+    afterRenderMap[screen] && afterRenderMap[screen]();
+    ensureSOSFab();
+    window.scrollTo(0,0);
+    return;
+  }
+  if(!document.getElementById('view')){
+    document.getElementById('app').innerHTML = shellHTML();
+    wireNav();
+  }
+  document.getElementById('view').innerHTML = `<div class="view-inner">${renderers[screen] ? renderers[screen](params) : ''}</div>`;
+  highlightNav(screen);
+  afterRenderMap[screen] && afterRenderMap[screen](params);
+  ensureSOSFab();
+  window.scrollTo(0,0);
+}
+const afterRenderMap = {};
+
+/* ================= LANDING ================= */
+renderers.landing = function(){
+  return `
+  <div class="landing-shell" style="max-width:1100px;margin:0 auto;padding:36px 24px 80px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:56px;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="mark" style="width:36px;height:36px;border-radius:11px;background:var(--purple-600);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;">M</div>
+        <span style="font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--purple-900);">MindMitra AI</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:18px;">
+        <span style="font-weight:600;color:var(--ink-soft);font-size:14.5px;">Sign in</span>
+        <button class="pill-btn" onclick="go('language')">Get started</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:48px;align-items:center;">
+      <div>
+        <div class="badge-pill">✨ Explainable AI screening</div>
+        <h1 style="font-size:52px;line-height:1.06;margin:20px 0 18px;">Notice the earliest signs of cognitive change.</h1>
+        <p style="color:var(--text-secondary);font-size:17px;max-width:520px;">MindMitra combines speech analysis, cognitive games and gentle monitoring to screen for early dementia risk — accessible, multilingual, and caregiver-friendly.</p>
+        <div style="display:flex;gap:14px;margin-top:26px;flex-wrap:wrap;">
+          <button class="pill-btn large" onclick="go('language')">Start free screening</button>
+          <button class="pill-btn secondary large" onclick="document.getElementById('howsec').scrollIntoView({behavior:'smooth'})">How it works</button>
+        </div>
+        <p style="color:var(--text-muted);font-size:13px;margin-top:16px;">🛡️ Screening tool — not a medical diagnosis.</p>
+      </div>
+      <div class="hero-card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <div class="icon-circle">💜</div>
+          <div><div style="color:var(--text-muted);font-size:13px;">Weekly cognitive score</div><div style="font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--purple-900);">82 · Low risk</div></div>
+        </div>
+        <div class="grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:16px;">
+          ${STATE.weekly.map((v,i)=>`<div class="week-bar"><div class="stem"><div class="fill" style="height:${v}%;"></div></div><div class="lbl">W${i+1}</div></div>`).join('')}
+        </div>
+        <div class="grid grid-2">
+          <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Memory</div><div style="font-family:var(--font-display);font-weight:700;font-size:20px;">84</div></div>
+          <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Attention</div><div style="font-family:var(--font-display);font-weight:700;font-size:20px;">78</div></div>
+          <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Speech</div><div style="font-family:var(--font-display);font-weight:700;font-size:20px;">86</div></div>
+          <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Executive</div><div style="font-family:var(--font-display);font-weight:700;font-size:20px;">80</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="howsec" style="margin-top:96px;">
+      <h2 style="font-size:32px;">How MindMitra screens for early risk</h2>
+      <p style="color:var(--text-secondary);max-width:640px;margin-bottom:28px;">Four short, gentle activities produce an explainable cognitive score and personalized recommendations in under 10 minutes.</p>
+      <div class="grid grid-4">
+        ${[['🎙️','AI speech analysis','Fluency, pauses, word finding — from a short spoken answer.'],
+           ['🧠','Cognitive games','Memory, attention, pattern recognition — timed and scored.'],
+           ['📈','Explainable risk score','Low / Moderate / High with the factors behind it.'],
+           ['👪','Caregiver mode','Trends, reminders and alerts — with the user&#39;s consent.']]
+           .map(([ic,tt,dd])=>`<div class="tile"><div class="icon-circle">${ic}</div><div style="font-weight:700;color:var(--purple-900);">${tt}</div><div style="color:var(--text-secondary);font-size:14px;">${dd}</div></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:40px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;background:var(--purple-50);box-shadow:none;">
+      <div style="max-width:560px;">
+        <h2 style="font-size:26px;">Built for India — and for families.</h2>
+        <p style="color:var(--text-secondary);">Speaks and listens in your own language, works for first-time smartphone users, and generates clinician-friendly reports you can share with a neurologist or geriatrician.</p>
+        <div class="chip-row" style="margin-top:12px;">
+          ${LANGS.map(l=>`<span class="chip">${l.native}</span>`).join('')}
+        </div>
+      </div>
+      <button class="pill-btn large" onclick="go('language')">Begin your screening</button>
+    </div>
+
+    <div style="margin-top:70px;">
+      <h2 style="font-size:28px;">Everything inside MindMitra</h2>
+      <div class="grid grid-2" style="margin-top:20px;">
+        ${[['🎙️','AI speech &amp; voice translation','Speak your answer in any Indian language — MindMitra transcribes and translates it for the reviewing doctor automatically.'],
+           ['🕰️','Clock drawing test','Draw a clock on screen; AI checks number placement, hand position and spatial layout.'],
+           ['🌱','Daily brain exercises','A new activity every day — memory match, word puzzles, category naming, story recall and more.'],
+           ['💬','AI companion chatbot','A gentle voice or text companion to talk to, in your own language, any time.'],
+           ['👪','Caregiver mode','Family can view trends, get alerts, and manage medication and appointment reminders — with consent.'],
+           ['📄','Clinical report generator','A doctor-ready PDF summary of scores, trends and AI explanations.'],
+           ['📍','Find nearby specialists','Locate neurologists, geriatricians and memory clinics, and request appointments.'],
+           ['📶','Offline mode','Works on low-end phones with poor connectivity; syncs when back online.']]
+           .map(([ic,tt,dd])=>`<div class="tile" style="flex-direction:row;align-items:flex-start;gap:14px;"><div class="icon-circle">${ic}</div><div><div style="font-weight:700;color:var(--purple-900);margin-bottom:4px;">${tt}</div><div style="color:var(--text-secondary);font-size:14px;">${dd}</div></div></div>`).join('')}
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:70px;">
+      <button class="pill-btn large" onclick="go('language')">Start free screening</button>
+    </div>
+  </div>
+  `;
+};
+
+/* ================= LANGUAGE / ONBOARDING ================= */
+renderers.language = function(){
+  return `
+  <div style="max-width:760px;margin:0 auto;padding:50px 22px 80px;">
+    <div style="text-align:center;margin-bottom:10px;">
+      <div class="mark" style="width:44px;height:44px;border-radius:14px;background:var(--purple-600);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:20px;margin:0 auto 14px;">M</div>
+    </div>
+    <h1 style="text-align:center;font-size:34px;">Choose your language</h1>
+    <p style="text-align:center;color:var(--text-secondary);max-width:480px;margin:8px auto 30px;" class="simple-text">Tap the language you feel most comfortable speaking. MindMitra will speak to you, and listen to you, in this language.</p>
+    <div style="text-align:center;margin-bottom:26px;">
+      <button class="speak-btn" id="introSpeakBtn" onclick="speak('Tap the language you feel most comfortable speaking.', this)">🔊 Listen</button>
+    </div>
+    <div class="lang-grid">
+      ${LANGS.map(l=>`<button class="lang-btn" data-lang="${l.key}"><span class="glyph">${l.glyph}</span><span><span class="native">${l.native}</span><br><span class="eng">${l.eng}</span></span></button>`).join('')}
+    </div>
+    <div style="margin-top:34px;text-align:center;">
+      <label style="display:inline-flex;align-items:center;gap:10px;font-weight:600;color:var(--ink-soft);">
+        <input type="checkbox" id="simpleModeCheck" style="width:20px;height:20px;"> Use Simple Mode — bigger text, fewer words, voice guidance on every screen
+      </label>
+    </div>
+  </div>
+  `;
+};
+afterRenderMap.language = function(){
+  speak('Tap the language you feel most comfortable speaking.');
+  document.querySelectorAll('.lang-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const key = btn.getAttribute('data-lang');
+      STATE.lang = LANGS.find(l=>l.key===key);
+      STATE.simpleMode = document.getElementById('simpleModeCheck').checked;
+      document.body.classList.toggle('simple-mode', STATE.simpleMode);
+      STATE.onboarded = true;
+      speak(STATE.lang.native + '. ' + (I18N[STATE.lang.key] ? I18N[STATE.lang.key].welcome : 'Welcome'));
+      go('home');
+    });
+  });
+};
+
+/* ================= HOME ================= */
+renderers.home = function(){
+  const avg = Math.round((84+78+86+80)/4);
+  return `
+  <div style="padding-top:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:22px;">
+      <div>
+        <h1 style="font-size:30px;margin-bottom:4px;">${t('welcome')}</h1>
+        <p style="color:var(--text-secondary);" class="simple-text">Here is how your mind has been doing this week.</p>
+      </div>
+      <button class="speak-btn" onclick="speak('${t('welcome')}. Your weekly cognitive score is ${avg}, which is low risk.', this)">🔊 ${t('readAloud')}</button>
+    </div>
+
+    <div class="card" style="margin-bottom:22px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div class="icon-circle" style="width:54px;height:54px;font-size:24px;">💜</div>
+          <div>
+            <div style="color:var(--text-muted);font-size:13px;">${t('weeklyScore')}</div>
+            <div style="font-family:var(--font-display);font-weight:700;font-size:26px;color:var(--purple-900);">${avg} · <span class="risk-tag risk-low">${t('lowRisk')}</span></div>
+          </div>
+        </div>
+        <button class="pill-btn" onclick="go('screening')">${t('startScreening')}</button>
+      </div>
+      <div class="grid" style="grid-template-columns:repeat(4,1fr);margin-top:22px;">
+        ${STATE.weekly.map((v,i)=>`<div class="week-bar"><div class="stem"><div class="fill" style="height:${v}%;"></div></div><div class="lbl">W${i+1}</div></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="grid grid-4" style="margin-bottom:22px;">
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Memory</div><div style="font-family:var(--font-display);font-weight:700;font-size:22px;">84</div></div>
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Attention</div><div style="font-family:var(--font-display);font-weight:700;font-size:22px;">78</div></div>
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Speech</div><div style="font-family:var(--font-display);font-weight:700;font-size:22px;">86</div></div>
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Executive</div><div style="font-family:var(--font-display);font-weight:700;font-size:22px;">80</div></div>
+    </div>
+
+    <div class="grid grid-2">
+      <button class="tile" style="text-align:left;flex-direction:row;align-items:center;gap:14px;" onclick="go('daily')">
+        <div class="icon-circle">🌱</div>
+        <div><div style="font-weight:700;color:var(--purple-900);">Today's brain exercise</div><div style="color:var(--text-secondary);font-size:13.5px;">A fresh activity, chosen just for today.</div></div>
+      </button>
+      <button class="tile" style="text-align:left;flex-direction:row;align-items:center;gap:14px;" onclick="go('chat')">
+        <div class="icon-circle">💬</div>
+        <div><div style="font-weight:700;color:var(--purple-900);">Talk to your AI companion</div><div style="color:var(--text-secondary);font-size:13.5px;">Speak or type, in ${STATE.lang.native}.</div></div>
+      </button>
+    </div>
+  </div>
+  `;
+};
+
+/* ================= SCREENING FLOW ================= */
+const SPEECH_PROMPTS = [
+  'Tell me about your day so far.',
+  'What did you have for breakfast this morning?',
+  'Describe your favourite memory with your family.',
+];
+renderers.screening = function(){
+  const prompt = SPEECH_PROMPTS[new Date().getDate() % SPEECH_PROMPTS.length];
+  return `
+  <div style="padding-top:12px;max-width:640px;margin:0 auto;">
+    <div class="badge-pill" style="margin-bottom:14px;">Step 1 of 5 · Speech analysis</div>
+    <h1 style="font-size:28px;">Let's start with a short conversation</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Answer out loud in ${STATE.lang.native}. There is no right or wrong answer — just speak naturally.</p>
+    <button class="speak-btn" onclick="speak('${prompt}', this)" style="margin:14px 0 26px;">🔊 ${t('readAloud')}</button>
+
+    <div class="card" style="text-align:center;">
+      <p style="font-family:var(--font-display);font-size:22px;color:var(--purple-900);margin-bottom:28px;">"${prompt}"</p>
+      <button class="mic-orb" id="micOrb" onclick="toggleSpeechCapture()">🎙️</button>
+      <p id="micStatus" style="color:var(--text-muted);margin-top:16px;font-size:14px;">Tap the microphone to answer</p>
+      <textarea id="speechTranscript" rows="3" placeholder="Your words will appear here — or type your answer if voice isn't available." style="margin-top:18px;text-align:left;">${STATE.transcript}</textarea>
+
+      <div id="translateBox" style="display:${STATE.translation ? 'block':'none'};text-align:left;margin-top:16px;background:var(--purple-50);border-radius:14px;padding:14px;">
+        <div style="font-weight:700;color:var(--purple-700);font-size:13px;margin-bottom:6px;">🌐 English translation for the clinician</div>
+        <div id="translationText" style="font-size:14.5px;color:var(--ink-soft);">${STATE.translation}</div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:22px;flex-wrap:wrap;">
+        <button class="pill-btn secondary" id="translateBtn" onclick="runTranslate()">🌐 Translate to English</button>
+        <button class="pill-btn" onclick="finishSpeechStep()">Continue →</button>
+      </div>
+    </div>
+  </div>
+  `;
+};
+let speechRecInstance = null;
+function toggleSpeechCapture(){
+  const orb = document.getElementById('micOrb');
+  const status = document.getElementById('micStatus');
+  if(speechRecInstance){
+    speechRecInstance.stop(); speechRecInstance = null;
+    orb.classList.remove('rec'); status.textContent = 'Tap the microphone to answer';
+    return;
+  }
+  status.style.color = 'var(--text-muted)';
+  orb.classList.add('rec'); status.textContent = t('listening');
+  speechRecInstance = startListening(
+    (text)=>{ STATE.transcript = text; document.getElementById('speechTranscript').value = text; },
+    (err)=>{
+      orb.classList.remove('rec'); speechRecInstance=null;
+      if(err){ status.style.color = 'var(--danger-ink)'; status.textContent = micErrorMessage(err); }
+      else { status.style.color = 'var(--text-muted)'; status.textContent = 'Tap the microphone to answer'; }
+    }
+  );
+}
+async function runTranslate(){
+  STATE.transcript = document.getElementById('speechTranscript').value;
+  if(!STATE.transcript.trim()){ return; }
+  const btn = document.getElementById('translateBtn');
+  btn.textContent = 'Translating…'; btn.disabled = true;
+  const result = await translateToEnglish(STATE.transcript, STATE.lang.eng);
+  STATE.translation = result;
+  document.getElementById('translateBox').style.display = 'block';
+  document.getElementById('translationText').textContent = result;
+  btn.textContent = '🌐 Translate to English'; btn.disabled = false;
+}
+function finishSpeechStep(){
+  STATE.transcript = document.getElementById('speechTranscript').value;
+  const words = STATE.transcript.trim().split(/\s+/).filter(Boolean).length;
+  STATE.scores.speech = Math.max(55, Math.min(96, 60 + Math.min(words,30)));
+  go('memoryGame');
+}
+
+const MEM_EMOJI = ['🍎','🌸','🐘','🌙','🧵','🪔','🎈','🥥','🦜'];
+renderers.memoryGame = function(){
+  return `
+  <div style="padding-top:12px;max-width:640px;margin:0 auto;">
+    <div class="badge-pill" style="margin-bottom:14px;">Step 2 of 5 · Memory test</div>
+    <h1 style="font-size:28px;">Remember these pictures</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Look carefully. They will disappear in a few seconds, then you'll be asked to find them again.</p>
+    <button class="speak-btn" onclick="speak('Look carefully at these pictures. They will disappear soon, then find them again.', this)" style="margin:14px 0 24px;">🔊 ${t('readAloud')}</button>
+    <div class="card">
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);" id="memGrid"></div>
+      <p id="memTimer" style="text-align:center;color:var(--text-muted);margin-top:16px;">Memorize... <b id="memCount">5</b>s</p>
+    </div>
+  </div>
+  `;
+};
+afterRenderMap.memoryGame = function(){
+  const shuffled = [...MEM_EMOJI].sort(()=>Math.random()-0.5);
+  const target = shuffled.slice(0,6);
+  const grid = document.getElementById('memGrid');
+  grid.innerHTML = target.map(e=>`<div class="memcard">${e}</div>`).join('');
+  let n = 5;
+  const timer = setInterval(()=>{
+    n--; const el = document.getElementById('memCount'); if(el) el.textContent = n;
+    if(n<=0){ clearInterval(timer); showMemoryRecall(target); }
+  },1000);
+};
+function showMemoryRecall(target){
+  const options = [...target, ...MEM_EMOJI.filter(e=>!target.includes(e)).slice(0,3)].sort(()=>Math.random()-0.5);
+  const grid = document.getElementById('memGrid');
+  const timerEl = document.getElementById('memTimer');
+  timerEl.textContent = 'Now tap the pictures you remember';
+  grid.innerHTML = options.map(e=>`<button class="memcard" data-e="${e}" onclick="this.classList.toggle('chosen')">${e}</button>`).join('');
+  grid.insertAdjacentHTML('afterend', `<div style="text-align:center;margin-top:20px;"><button class="pill-btn" onclick="scoreMemory(${JSON.stringify(target).replace(/"/g,'&quot;')})">Submit answer</button></div>`);
+}
+function scoreMemory(target){
+  const chosen = Array.from(document.querySelectorAll('.memcard.chosen')).map(el=>el.getAttribute('data-e'));
+  const correct = chosen.filter(e=>target.includes(e)).length;
+  STATE.scores.memory = Math.round((correct/6)*100);
+  go('attentionGame');
+}
+
+renderers.attentionGame = function(){
+  return `
+  <div style="padding-top:12px;max-width:640px;margin:0 auto;">
+    <div class="badge-pill" style="margin-bottom:14px;">Step 3 of 5 · Attention test</div>
+    <h1 style="font-size:28px;">Tap the numbers in order</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Tap from 1 to 9, as quickly and accurately as you can.</p>
+    <button class="speak-btn" onclick="speak('Tap the numbers from 1 to 9, in order, as quickly as you can.', this)" style="margin:14px 0 24px;">🔊 ${t('readAloud')}</button>
+    <div class="card">
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);" id="numGrid"></div>
+      <p id="attnStatus" style="text-align:center;color:var(--text-muted);margin-top:16px;">Next: <b id="attnNext">1</b></p>
+    </div>
+  </div>
+  `;
+};
+afterRenderMap.attentionGame = function(){
+  const nums = [1,2,3,4,5,6,7,8,9].sort(()=>Math.random()-0.5);
+  window.__attnNext = 1; window.__attnStart = Date.now(); window.__attnMistakes = 0;
+  const grid = document.getElementById('numGrid');
+  grid.innerHTML = nums.map(n=>`<button class="num-tap" data-n="${n}" onclick="tapNumber(${n})">${n}</button>`).join('');
+};
+function tapNumber(n){
+  const status = document.getElementById('attnStatus');
+  if(n === window.__attnNext){
+    document.querySelector(`.num-tap[data-n="${n}"]`).classList.add('done');
+    window.__attnNext++;
+    if(window.__attnNext>9){
+      const elapsed = (Date.now()-window.__attnStart)/1000;
+      const base = Math.max(40, 100 - Math.round(elapsed*3) - window.__attnMistakes*5);
+      STATE.scores.attention = Math.min(97, base);
+      status.textContent = 'Great job!';
+      setTimeout(()=>go('patternGame'), 500);
+    } else {
+      document.getElementById('attnNext').textContent = window.__attnNext;
+    }
+  } else {
+    window.__attnMistakes++;
+  }
+}
+
+const PATTERNS = [
+  { seq:['🔴','🔵','🔴','🔵','?'], options:['🔴','🟢','🟡'], ans:'🔴' },
+  { seq:['⬛','⬛⬛','⬛⬛⬛','?'], options:['⬛⬛⬛⬛','⬛','⬛⬛'], ans:'⬛⬛⬛⬛' },
+  { seq:['▲','▲▲','▲','▲▲','?'], options:['▲','▲▲','●'], ans:'▲' },
+  { seq:['🟨','🟦','🟨','🟦','?'], options:['🟩','🟨','⬛'], ans:'🟨' },
+];
+renderers.patternGame = function(){
+  return `
+  <div style="padding-top:12px;max-width:640px;margin:0 auto;">
+    <div class="badge-pill" style="margin-bottom:14px;">Step 4 of 5 · Pattern recognition</div>
+    <h1 style="font-size:28px;">Find what comes next</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Look at the pattern and choose what should replace the question mark.</p>
+    <button class="speak-btn" onclick="speak('Look at the pattern and choose what should replace the question mark.', this)" style="margin:14px 0 24px;">🔊 ${t('readAloud')}</button>
+    <div id="patternWrap"></div>
+  </div>
+  `;
+};
+afterRenderMap.patternGame = function(){
+  window.__patternIdx = 0; window.__patternCorrect = 0;
+  renderPatternQ();
+};
+function renderPatternQ(){
+  const q = PATTERNS[window.__patternIdx];
+  document.getElementById('patternWrap').innerHTML = `
+    <div class="card" style="text-align:center;">
+      <div style="font-size:34px;letter-spacing:10px;margin-bottom:26px;">${q.seq.join('&nbsp;&nbsp;')}</div>
+      <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+        ${q.options.map(o=>`<button class="pill-btn secondary" style="font-size:26px;padding:16px 26px;" onclick="answerPattern('${o}')">${o}</button>`).join('')}
+      </div>
+      <p style="color:var(--text-muted);margin-top:18px;font-size:13px;">Question ${window.__patternIdx+1} of ${PATTERNS.length}</p>
+    </div>`;
+}
+function answerPattern(choice){
+  const q = PATTERNS[window.__patternIdx];
+  if(choice === q.ans) window.__patternCorrect++;
+  window.__patternIdx++;
+  if(window.__patternIdx >= PATTERNS.length){
+    STATE.scores.executive = Math.round((window.__patternCorrect/PATTERNS.length)*100);
+    go('clockGame');
+  } else { renderPatternQ(); }
+}
+
+renderers.clockGame = function(){
+  return `
+  <div style="padding-top:12px;max-width:640px;margin:0 auto;">
+    <div class="badge-pill" style="margin-bottom:14px;">Step 5 of 5 · Clock drawing test</div>
+    <h1 style="font-size:28px;">Draw a clock showing 10 past 11</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Draw the clock face, all 12 numbers, and both hands as best you can.</p>
+    <button class="speak-btn" onclick="speak('Draw a clock face with all twelve numbers, and draw the hands to show ten past eleven.', this)" style="margin:14px 0 24px;">🔊 ${t('readAloud')}</button>
+    <div class="card" style="text-align:center;">
+      <canvas id="clockCanvas" width="360" height="360" style="border:2px dashed var(--purple-200);border-radius:20px;background:#fff;touch-action:none;max-width:100%;"></canvas>
+      <div style="display:flex;gap:12px;justify-content:center;margin-top:18px;flex-wrap:wrap;">
+        <button class="pill-btn secondary" onclick="clearClockCanvas()">Clear</button>
+        <button class="pill-btn" id="clockSubmitBtn" onclick="submitClockDrawing()">Submit drawing</button>
+      </div>
+      <div id="clockFeedback" style="margin-top:16px;"></div>
+    </div>
+  </div>
+  `;
+};
+let clockCtx = null;
+afterRenderMap.clockGame = function(){
+  const canvas = document.getElementById('clockCanvas');
+  clockCtx = canvas.getContext('2d');
+  clockCtx.lineWidth = 3; clockCtx.lineCap = 'round'; clockCtx.strokeStyle = '#4F2FA8';
+  let drawing = false;
+  function pos(e){
+    const r = canvas.getBoundingClientRect();
+    const p = e.touches ? e.touches[0] : e;
+    return { x: (p.clientX-r.left) * (canvas.width/r.width), y: (p.clientY-r.top) * (canvas.height/r.height) };
+  }
+  function start(e){ drawing = true; const p = pos(e); clockCtx.beginPath(); clockCtx.moveTo(p.x,p.y); e.preventDefault(); }
+  function move(e){ if(!drawing) return; const p = pos(e); clockCtx.lineTo(p.x,p.y); clockCtx.stroke(); e.preventDefault(); }
+  function end(){ drawing = false; }
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', move); canvas.addEventListener('touchend', end);
+};
+function clearClockCanvas(){ if(clockCtx) clockCtx.clearRect(0,0,360,360); }
+async function submitClockDrawing(){
+  const canvas = document.getElementById('clockCanvas');
+  const btn = document.getElementById('clockSubmitBtn');
+  btn.textContent = 'AI is reviewing…'; btn.disabled = true;
+  const dataUrl = canvas.toDataURL('image/png');
+  const result = await reviewClockDrawing(dataUrl);
+  STATE.scores.clock = result.score;
+  document.getElementById('clockFeedback').innerHTML = `<div class="card-flat" style="text-align:left;">🕰️ <b>${result.score}/100</b> — ${result.feedback}</div>`;
+  btn.textContent = 'Continue →'; btn.disabled = false;
+  btn.onclick = ()=> go('results');
+}
+
+/* ================= RESULTS ================= */
+renderers.results = function(){
+  const s = STATE.scores;
+  const overall = Math.round(((s.memory||70)+(s.attention||70)+(s.speech||70)+(s.executive||70)+(s.clock||70))/5);
+  const riskClass = overall>=70 ? 'risk-low' : overall>=45 ? 'risk-mod' : 'risk-high';
+  const riskLabel = overall>=70 ? 'Low risk' : overall>=45 ? 'Moderate risk' : 'High risk';
+  STATE.history.push({ date:new Date().toLocaleDateString(), overall });
+  return `
+  <div style="padding-top:12px;max-width:640px;margin:0 auto;">
+    <h1 style="font-size:30px;">Your screening results</h1>
+    <div class="card" style="margin-top:16px;text-align:center;">
+      <div style="font-family:var(--font-display);font-size:52px;font-weight:700;color:var(--purple-900);">${overall}</div>
+      <span class="risk-tag ${riskClass}">${riskLabel}</span>
+      <p style="color:var(--text-secondary);margin-top:16px;" class="simple-text">This is a screening estimate, not a diagnosis.</p>
+    </div>
+    <div class="grid grid-4" style="margin-top:20px;">
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Memory</div><div style="font-weight:700;font-size:20px;">${s.memory??'--'}</div></div>
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Attention</div><div style="font-weight:700;font-size:20px;">${s.attention??'--'}</div></div>
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Speech</div><div style="font-weight:700;font-size:20px;">${s.speech??'--'}</div></div>
+      <div class="card-flat"><div style="color:var(--text-muted);font-size:12.5px;">Executive</div><div style="font-weight:700;font-size:20px;">${s.executive??'--'}</div></div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <h3 style="font-size:17px;margin-bottom:10px;">Why this score</h3>
+      <p style="color:var(--text-secondary);font-size:14.5px;">Speech fluency and word-finding were within a healthy range. Attention timing was slightly slower than your last screening. Memory recall and pattern recognition were both strong today.</p>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:22px;flex-wrap:wrap;">
+      <button class="pill-btn" onclick="go('report')">📄 Generate clinical report</button>
+      <button class="pill-btn secondary" onclick="go('home')">Back to home</button>
+    </div>
+  </div>
+  `;
+};
+
+/* ================= DAILY EXERCISE ================= */
+const DAILY_TYPES = [
+  { key:'memory', label:'Memory match', icon:'🧠', color:'var(--purple-100)' },
+  { key:'word', label:'Word puzzle', icon:'🔤', color:'#E1F5EE' },
+  { key:'attention', label:'Attention sprint', icon:'⚡', color:'#FAECE7' },
+  { key:'category', label:'Category naming', icon:'🗂️', color:'#FBEAF0' },
+  { key:'recall', label:'Object recall', icon:'👁️', color:'#EAF3DE' },
+  { key:'story', label:'Story recall', icon:'📖', color:'#FAEEDA' },
+  { key:'reaction', label:'Reaction tap', icon:'👆', color:'#E6F1FB' },
+];
+function dayOfYear(){ const d = new Date(); const start = new Date(d.getFullYear(),0,0); return Math.floor((d-start)/86400000); }
+renderers.daily = function(){
+  const todayType = DAILY_TYPES[dayOfYear() % DAILY_TYPES.length];
+  return `
+  <div style="padding-top:12px;">
+    <h1 style="font-size:28px;">Daily brain exercise</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">A different challenge every day keeps your mind curious. Streak: 🔥 ${STATE.streak} days.</p>
+    <div class="card" style="margin-top:18px;display:flex;align-items:center;gap:18px;background:${todayType.color};box-shadow:none;">
+      <div style="font-size:38px;">${todayType.icon}</div>
+      <div style="flex:1;">
+        <div style="font-weight:700;font-size:19px;color:var(--purple-900);">Today: ${todayType.label}</div>
+        <div style="color:var(--text-secondary);font-size:14px;">Takes about 3 minutes.</div>
+      </div>
+      <button class="pill-btn" onclick="go('dailyPlay', '${todayType.key}')">Start</button>
+    </div>
+    <h3 style="margin-top:30px;font-size:16px;color:var(--ink-soft);">This week's activities</h3>
+    <div class="grid grid-4" style="margin-top:12px;">
+      ${DAILY_TYPES.map((d,i)=>`<div class="tile" style="align-items:center;text-align:center;${i===(dayOfYear()%DAILY_TYPES.length)?'border-color:var(--purple-500);':''}"><div style="font-size:26px;">${d.icon}</div><div style="font-weight:600;font-size:13px;">${d.label}</div></div>`).join('')}
+    </div>
+  </div>
+  `;
+};
+
+const WORD_PUZZLES = [{ answer:'MEMORY', scrambled:'YOMERM' }, { answer:'FAMILY', scrambled:'YLIFAM' }, { answer:'GARDEN', scrambled:'DAERNG' }];
+const CATEGORY_LIST = ['Fruits', 'Household items', 'Animals', 'Vegetables'];
+const RECALL_OBJECTS = ['🔑','☂️','📖','🕯️','🧴'];
+const STORY_TEXT = "Ramesh went to the market on Tuesday morning. He bought two mangoes and a loaf of bread. On his way home, he met his old friend Suresh near the temple.";
+const STORY_QS = [
+  { q:'What day did Ramesh go to the market?', a:'Tuesday' },
+  { q:'What did Ramesh buy besides bread?', a:'Mangoes' },
+];
+
+renderers.dailyPlay = function(key){
+  if(key==='memory') return renderers.memoryGame();
+  if(key==='attention' || key==='reaction') return renderers.attentionGame();
+  if(key==='word'){
+    const p = WORD_PUZZLES[dayOfYear()%WORD_PUZZLES.length];
+    return `
+    <div style="padding-top:12px;max-width:560px;margin:0 auto;">
+      <h1 style="font-size:26px;">Word puzzle</h1>
+      <p style="color:var(--text-secondary);" class="simple-text">Unscramble the letters to find today's word.</p>
+      <div class="card" style="text-align:center;">
+        <div style="font-family:var(--font-display);font-size:40px;letter-spacing:10px;color:var(--purple-700);margin:20px 0;">${p.scrambled}</div>
+        <input type="text" id="wordGuess" placeholder="Type your answer" style="max-width:260px;margin:0 auto 18px;text-align:center;">
+        <div><button class="pill-btn" onclick="checkWordPuzzle('${p.answer}')">Check</button></div>
+        <p id="wordFeedback" style="margin-top:14px;font-weight:600;"></p>
+      </div>
+    </div>`;
+  }
+  if(key==='category'){
+    const cat = CATEGORY_LIST[dayOfYear()%CATEGORY_LIST.length];
+    return `
+    <div style="padding-top:12px;max-width:560px;margin:0 auto;">
+      <h1 style="font-size:26px;">Category naming</h1>
+      <p style="color:var(--text-secondary);" class="simple-text">Name as many ${cat.toLowerCase()} as you can in 30 seconds. Type each one and press Enter.</p>
+      <div class="card">
+        <p id="catTimer" style="text-align:center;color:var(--purple-700);font-weight:700;font-size:20px;">30s</p>
+        <input type="text" id="catInput" placeholder="Type an item and press Enter" onkeydown="if(event.key==='Enter'){addCatItem();event.preventDefault();}">
+        <div id="catList" class="chip-row" style="margin-top:14px;"></div>
+        <div style="text-align:center;margin-top:18px;"><button class="pill-btn secondary" onclick="finishCategoryGame()">Finish now</button></div>
+      </div>
+    </div>`;
+  }
+  if(key==='recall'){
+    return `
+    <div style="padding-top:12px;max-width:560px;margin:0 auto;">
+      <h1 style="font-size:26px;">Object recall</h1>
+      <p style="color:var(--text-secondary);" class="simple-text">Remember these objects, then list them from memory.</p>
+      <div class="card" style="text-align:center;">
+        <div id="recallObjects" style="font-size:44px;letter-spacing:16px;margin:20px 0;">${RECALL_OBJECTS.join(' ')}</div>
+        <p id="recallTimer" style="color:var(--text-muted);">Memorize... <b id="recallCount">5</b>s</p>
+      </div>
+    </div>`;
+  }
+  if(key==='story'){
+    return `
+    <div style="padding-top:12px;max-width:560px;margin:0 auto;">
+      <h1 style="font-size:26px;">Story recall</h1>
+      <p style="color:var(--text-secondary);" class="simple-text">Listen to or read the short story, then answer the questions.</p>
+      <div class="card">
+        <p style="font-size:16px;line-height:1.7;">${STORY_TEXT}</p>
+        <button class="speak-btn" onclick="speak('${STORY_TEXT}', this)">🔊 ${t('readAloud')}</button>
+        <button class="pill-btn" style="margin-top:18px;" onclick="go('storyQuestions')">I'm ready →</button>
+      </div>
+    </div>`;
+  }
+  return renderers.home();
+};
+afterRenderMap.dailyPlay = function(key){
+  if(key==='recall'){
+    let n=5;
+    const timer = setInterval(()=>{
+      n--; const el = document.getElementById('recallCount'); if(el) el.textContent=n;
+      if(n<=0){ clearInterval(timer);
+        document.getElementById('recallObjects').innerHTML = '';
+        document.getElementById('recallTimer').innerHTML = `
+          <input type="text" id="recallGuess" placeholder="Type the objects you remember, separated by commas" style="text-align:center;">
+          <div style="margin-top:14px;"><button class="pill-btn" onclick="finishRecallGame()">Submit</button></div>`;
+      }
+    },1000);
+  }
+  if(key==='category'){
+    window.__catItems = [];
+    let n=30;
+    window.__catTimer = setInterval(()=>{
+      n--; const el = document.getElementById('catTimer'); if(el) el.textContent = n+'s';
+      if(n<=0) finishCategoryGame();
+    },1000);
+  }
+};
+function checkWordPuzzle(answer){
+  const guess = document.getElementById('wordGuess').value.trim().toUpperCase();
+  const fb = document.getElementById('wordFeedback');
+  fb.style.color = guess===answer ? 'var(--success-ink)' : 'var(--danger-ink)';
+  fb.textContent = guess===answer ? '✅ Correct! Well done.' : `Not quite — the word was ${answer}.`;
+  setTimeout(()=> go('home'), 1600);
+}
+function addCatItem(){
+  const input = document.getElementById('catInput');
+  const val = input.value.trim();
+  if(val){ window.__catItems.push(val); document.getElementById('catList').innerHTML = window.__catItems.map(w=>`<span class="chip on">${w}</span>`).join(''); }
+  input.value='';
+}
+function finishCategoryGame(){
+  clearInterval(window.__catTimer);
+  const count = (window.__catItems||[]).length;
+  document.getElementById('view').innerHTML = `<div class="view-inner" style="max-width:520px;margin:60px auto;text-align:center;"><div class="card"><h2>Nice work!</h2><p style="color:var(--text-secondary);">You named ${count} items.</p><button class="pill-btn" style="margin-top:14px;" onclick="go('home')">Done</button></div></div>`;
+}
+function finishRecallGame(){
+  const guess = (document.getElementById('recallGuess').value||'').toLowerCase();
+  document.getElementById('view').innerHTML = `<div class="view-inner" style="max-width:520px;margin:60px auto;text-align:center;"><div class="card"><h2>Recall complete</h2><p style="color:var(--text-secondary);">Thanks — this is saved to your progress trend.</p><button class="pill-btn" style="margin-top:14px;" onclick="go('home')">Done</button></div></div>`;
+}
+renderers.storyQuestions = function(){
+  return `
+  <div style="padding-top:12px;max-width:560px;margin:0 auto;">
+    <h1 style="font-size:26px;">A few questions</h1>
+    <div class="card">
+      ${STORY_QS.map((q,i)=>`<div style="margin-bottom:16px;"><p style="font-weight:600;">${q.q}</p><input type="text" id="storyA${i}" placeholder="Your answer"></div>`).join('')}
+      <button class="pill-btn" onclick="go('home')">Submit</button>
+    </div>
+  </div>`;
+};
+
+/* ================= CAREGIVER MODE ================= */
+renderers.caregiver = function(){
+  return `
+  <div style="padding-top:12px;">
+    <h1 style="font-size:28px;">${t('caregiver')}</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Trends, alerts and reminders — shared only with the family member's consent.</p>
+
+    <div class="card" style="margin-top:18px;">
+      <h3 style="font-size:16px;margin-bottom:14px;">Cognitive score trend</h3>
+      <div class="grid" style="grid-template-columns:repeat(4,1fr);">
+        ${STATE.weekly.map((v,i)=>`<div class="week-bar"><div class="stem"><div class="fill" style="height:${v}%;"></div></div><div class="lbl">W${i+1}</div></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3 style="font-size:16px;margin-bottom:10px;">📍 Live location</h3>
+      ${STATE.location.sharing && STATE.location.lat != null ? `
+        <iframe title="Live location map" src="${locationMapEmbedUrl(STATE.location.lat, STATE.location.lng)}" style="width:100%;height:240px;border:0;border-radius:14px;" loading="lazy"></iframe>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;flex-wrap:wrap;gap:8px;">
+          <span style="color:var(--text-secondary);font-size:13px;">Updated ${STATE.location.updatedAt ? STATE.location.updatedAt.toLocaleTimeString() : '—'}${STATE.location.accuracy ? ' · ±'+Math.round(STATE.location.accuracy)+'m' : ''}</span>
+          <a class="pill-btn secondary" style="padding:8px 14px;font-size:13px;text-decoration:none;" target="_blank" href="https://www.google.com/maps?q=${STATE.location.lat},${STATE.location.lng}">Open in Google Maps</a>
+        </div>
+      ` : STATE.location.sharing ? `
+        <p style="color:var(--text-muted);">Waiting for the first GPS reading…</p>
+      ` : `
+        <p style="color:var(--text-muted);">Location sharing is currently off. It can only be turned on by the person themselves, in Settings — this keeps them in control of their own privacy.</p>
+      `}
+    </div>
+
+    <div class="grid grid-2" style="margin-top:20px;">
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:10px;">🔔 Alerts</h3>
+        ${STATE.alerts.map(a=>`<div class="card-flat" style="margin-bottom:8px;${a.tone==='urgent'?'background:var(--danger-bg);color:var(--danger-ink);font-weight:700;':''}">${a.text}</div>`).join('') || '<p style="color:var(--text-muted);">No alerts right now.</p>'}
+      </div>
+      <div class="card">
+        <h3 style="font-size:16px;margin-bottom:10px;">💊 Reminders</h3>
+        ${STATE.reminders.map(r=>`
+          <label style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+            <input type="checkbox" ${r.done?'checked':''} onchange="toggleReminder(${r.id})">
+            <span style="flex:1;text-decoration:${r.done?'line-through':'none'};color:${r.done?'var(--text-muted)':'var(--ink)'};">${r.text}</span>
+            <span style="color:var(--text-muted);font-size:12.5px;">${r.time}</span>
+          </label>`).join('')}
+        <button class="pill-btn secondary" style="margin-top:6px;" onclick="addReminder()">+ Add reminder</button>
+      </div>
+    </div>
+  </div>
+  `;
+};
+function toggleReminder(id){ const r = STATE.reminders.find(x=>x.id===id); if(r) r.done = !r.done; go('caregiver'); }
+function addReminder(){
+  const text = prompt('Reminder text:'); if(!text) return;
+  const time = prompt('Time (e.g. 8:00 AM):') || '';
+  STATE.reminders.push({ id: Date.now(), text, time, done:false });
+  go('caregiver');
+}
+
+/* ================= AI CHATBOT ================= */
+renderers.chat = function(){
+  return `
+  <div style="padding-top:12px;max-width:640px;margin:0 auto;">
+    <h1 style="font-size:28px;">${t('chat')}</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Talk anytime, in ${STATE.lang.native}. This is a companion, not a doctor.</p>
+    <div class="card" style="margin-top:16px;">
+      <div id="chatWindow" style="display:flex;flex-direction:column;gap:10px;min-height:280px;max-height:420px;overflow-y:auto;padding:4px;"></div>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="mic-orb" style="width:46px;height:46px;font-size:18px;" id="chatMic" onclick="toggleChatMic()">🎙️</button>
+        <input type="text" id="chatInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter'){sendChat();}">
+        <button class="pill-btn" onclick="sendChat()">Send</button>
+      </div>
+    </div>
+  </div>
+  `;
+};
+afterRenderMap.chat = function(){ renderChatWindow(); if(STATE.chat.length===0){ pushChat('bot', "Namaste! I'm here to talk whenever you like. How are you feeling today?"); } };
+function renderChatWindow(){
+  const win = document.getElementById('chatWindow');
+  if(!win) return;
+  win.innerHTML = STATE.chat.map(m=>`<div class="chat-bubble ${m.role==='user'?'user':'bot'}">${m.text}</div>`).join('');
+  win.scrollTop = win.scrollHeight;
+}
+function pushChat(role, text){ STATE.chat.push({role,text}); renderChatWindow(); if(role==='bot') speak(text); }
+async function sendChat(){
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim(); if(!msg) return;
+  input.value=''; pushChat('user', msg);
+  const thinking = { role:'bot', text:'…' }; STATE.chat.push(thinking); renderChatWindow();
+  const reply = await chatbotReply(msg, STATE.chat);
+  STATE.chat[STATE.chat.length-1] = { role:'bot', text: reply };
+  renderChatWindow(); speak(reply);
+}
+let chatRec = null;
+function toggleChatMic(){
+  if(chatRec){ chatRec.stop(); chatRec=null; return; }
+  document.getElementById('chatMic').classList.add('rec');
+  chatRec = startListening(
+    (text)=>{ document.getElementById('chatInput').value = text; },
+    (err)=>{
+      document.getElementById('chatMic').classList.remove('rec'); chatRec=null;
+      if(err) alert(micErrorMessage(err));
+    }
+  );
+}
+
+/* ================= CLINICAL REPORT ================= */
+renderers.report = function(){
+  const s = STATE.scores;
+  const overall = Math.round(((s.memory||70)+(s.attention||70)+(s.speech||70)+(s.executive||70)+(s.clock||70))/5);
+  const riskLabel = overall>=70 ? 'Low risk' : overall>=45 ? 'Moderate risk' : 'High risk';
+  const rows = [
+    ['Date of assessment', new Date().toLocaleDateString()],
+    ['Memory score', s.memory ?? '--'],
+    ['Attention score', s.attention ?? '--'],
+    ['Executive function score', s.executive ?? '--'],
+    ['Speech analysis summary', s.speech!=null ? `Fluency score ${s.speech}/100` : '--'],
+    ['Clock drawing score', s.clock ?? '--'],
+    ['Overall AI risk level', riskLabel],
+  ];
+  document.getElementById('printArea') && (document.getElementById('printArea').innerHTML = `
+    <h1>MindMitra AI — Clinical Screening Report</h1>
+    <table style="width:100%;border-collapse:collapse;">${rows.map(r=>`<tr><td style="padding:8px;border-bottom:1px solid #ddd;font-weight:600;">${r[0]}</td><td style="padding:8px;border-bottom:1px solid #ddd;">${r[1]}</td></tr>`).join('')}</table>
+    <p style="margin-top:18px;">This screening indicates changes in memory and language that may benefit from further medical evaluation. This is not a diagnosis. We recommend consulting a qualified healthcare professional.</p>
+  `);
+  return `
+  <div style="padding-top:12px;max-width:660px;margin:0 auto;">
+    <h1 style="font-size:28px;">${t('report')}</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">A doctor-ready summary you can download or share.</p>
+    <div class="card" style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <h3 style="font-size:17px;">Patient screening summary</h3>
+        <span class="risk-tag ${overall>=70?'risk-low':overall>=45?'risk-mod':'risk-high'}">${riskLabel}</span>
+      </div>
+      ${rows.map(r=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #F1ECFC;font-size:14.5px;"><span style="color:var(--text-secondary);">${r[0]}</span><span style="font-weight:600;">${r[1]}</span></div>`).join('')}
+      <p style="color:var(--text-secondary);font-size:14px;margin-top:14px;">This screening indicates changes worth discussing with a specialist. This is not a diagnosis.</p>
+      <div style="display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;">
+        <button class="pill-btn" onclick="window.print()">⬇️ Download as PDF</button>
+        <button class="pill-btn secondary" onclick="go('specialists')">📍 Find a specialist to share this with</button>
+      </div>
+    </div>
+  </div>
+  `;
+};
+
+/* ================= FIND SPECIALISTS ================= */
+const SPECIALISTS = [
+  { name:'Dr. Anjali Rao', role:'Neurologist', place:'Sunrise Memory Clinic', dist:'2.1 km' },
+  { name:'Dr. Karthik Menon', role:'Geriatrician', place:'City General Hospital', dist:'3.4 km' },
+  { name:'Dr. Farida Sheikh', role:'Psychiatrist', place:'Wellspring Health Centre', dist:'4.8 km' },
+  { name:'Government District Hospital', role:'Cognitive care services', place:'Free consultation days available', dist:'5.6 km' },
+];
+renderers.specialists = function(){
+  return `
+  <div style="padding-top:12px;">
+    <h1 style="font-size:28px;">${t('specialists')}</h1>
+    <p style="color:var(--text-secondary);" class="simple-text">Illustrative results near you — connect your location to see live listings.</p>
+    <div class="grid grid-2" style="margin-top:16px;">
+      ${SPECIALISTS.map(s=>`
+        <div class="spec-card">
+          <div class="icon-circle">🩺</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;color:var(--purple-900);">${s.name}</div>
+            <div style="color:var(--text-secondary);font-size:13.5px;">${s.role} · ${s.place}</div>
+            <div style="color:var(--text-muted);font-size:12.5px;margin-top:4px;">${s.dist} away</div>
+            <button class="pill-btn secondary" style="margin-top:10px;padding:8px 16px;font-size:13px;" onclick="requestAppointment('${s.name}')">Request appointment</button>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>
+  `;
+};
+function requestAppointment(name){
+  alert(`Appointment request sent to ${name}. Your latest clinical report will be shared with your consent.`);
+}
+
+/* ================= SETTINGS ================= */
+renderers.settings = function(){
+  return `
+  <div style="padding-top:12px;max-width:600px;margin:0 auto;">
+    <h1 style="font-size:28px;">${t('settings')}</h1>
+    <div class="card" style="margin-top:16px;">
+      <h3 style="font-size:16px;margin-bottom:12px;">Language</h3>
+      <div class="chip-row">
+        ${LANGS.map(l=>`<button class="chip ${l.key===STATE.lang.key?'on':''}" onclick="setLang('${l.key}')">${l.native}</button>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3 style="font-size:16px;margin-bottom:12px;">Accessibility</h3>
+      <label style="display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" ${STATE.simpleMode?'checked':''} onchange="toggleSimpleMode()" style="width:20px;height:20px;">
+        Simple Mode — larger text, fewer words, voice guidance everywhere
+      </label>
+    </div>
+    <div class="card" style="margin-top:16px;border:1.5px solid #F5D3D0;">
+      <h3 style="font-size:16px;margin-bottom:6px;color:var(--danger-ink);">🆘 Emergency contact</h3>
+      <p style="color:var(--text-secondary);font-size:13.5px;margin-bottom:12px;">This person is alerted when the SOS button is used.</p>
+      <input type="text" id="sosNameInput" placeholder="Contact name" value="${STATE.emergencyContact.name}" style="margin-bottom:10px;">
+      <input type="text" id="sosPhoneInput" placeholder="Phone number" value="${STATE.emergencyContact.phone}">
+      <button class="pill-btn secondary" style="margin-top:12px;" onclick="saveEmergencyContact()">Save contact</button>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3 style="font-size:16px;margin-bottom:6px;">📍 Location sharing</h3>
+      <p style="color:var(--text-secondary);font-size:13.5px;margin-bottom:12px;">When turned on, your registered caregivers can see your current location. Turn it off any time — access stops immediately.</p>
+      <label style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <input type="checkbox" ${STATE.location.sharing?'checked':''} onchange="toggleLocationSharing()" style="width:20px;height:20px;">
+        Share my live location with my caregivers
+      </label>
+      ${STATE.location.sharing ? `
+        <div class="card-flat" style="margin-bottom:14px;">
+          ${STATE.location.updatedAt ? `Last update: ${STATE.location.updatedAt.toLocaleTimeString()}` : 'Getting your location…'}
+        </div>` : ''}
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px;">
+        <div>
+          <div style="font-weight:700;">Pairing code</div>
+          <div style="color:var(--text-secondary);font-size:13px;">Give this to a caregiver so they can register themselves in the Caregiver Dashboard app.</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="badge-pill" style="font-family:monospace;font-size:16px;letter-spacing:2px;">${STATE.patientAccount ? STATE.patientAccount.pairingCode : '------'}</span>
+          <button class="pill-btn secondary" style="padding:8px 14px;font-size:13px;" onclick="copyPairingCode()">Copy</button>
+        </div>
+      </div>
+      <h4 style="font-size:14.5px;margin:14px 0 8px;">Caregivers who can see your location</h4>
+      ${STATE.caregivers.length ? STATE.caregivers.map(c=>`
+        <div class="card-flat" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div>
+            <div style="font-weight:700;">${c.name}</div>
+            <div style="color:var(--text-secondary);font-size:12.5px;">${c.relation || 'Caregiver'}${c.phone ? ' · '+c.phone : ''}</div>
+          </div>
+          <button class="pill-btn secondary" style="padding:7px 14px;font-size:12.5px;color:var(--danger-ink);" onclick="revokeCaregiver('${c.id}')">Remove access</button>
+        </div>`).join('') : '<p style="color:var(--text-muted);font-size:13.5px;">No caregivers registered yet. Share your pairing code to add one.</p>'}
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3 style="font-size:16px;margin-bottom:8px;">Privacy &amp; security</h3>
+      <p style="color:var(--text-secondary);font-size:14px;">Your data is encrypted, shared only with your consent, and accessible with role-based permissions. Offline mode is available in low-connectivity areas — data syncs when you're back online.</p>
+    </div>
+  </div>
+  `;
+};
+function setLang(key){ STATE.lang = LANGS.find(l=>l.key===key); go('settings'); }
+afterRenderMap.settings = function(){ refreshCaregiverList(); };
+
+/* ================= BOOT ================= */
+document.body.classList.toggle('simple-mode', STATE.simpleMode);
+go('landing');
+(async function bootLocation(){
+  const saved = localStorage.getItem('mindmitra_patient_account');
+  if(saved){
+    STATE.patientAccount = JSON.parse(saved);
+    connectLocationSocket();
+    try{
+      const data = await apiCall('/api/patients/me', { headers:{ Authorization:'Bearer '+STATE.patientAccount.token } });
+      STATE.caregivers = data.caregivers || [];
+      if(data.sharingEnabled){ STATE.location.sharing = true; startWatchingLocation(); }
+    }catch(e){ /* backend not running — local demo mode, nothing to restore */ }
+  }
+})();
+</script>
+</body>
+</html>

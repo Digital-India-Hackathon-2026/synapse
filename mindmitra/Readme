@@ -1,0 +1,93 @@
+# MindMitra — Caregiver Location Tracking
+
+Adds a feature to MindMitra AI: a person can turn on live location sharing, and any
+caregiver they've registered (via a pairing code) can see where they are on a map,
+in real time — until the person turns it off.
+
+## How it fits together
+
+```
+frontend/patient-app/index.html      ← the original MindMitra app, with location
+                                        sharing added (Settings + Caregiver mode)
+frontend/caregiver-dashboard/        ← a small separate web app for caregivers,
+                                        showing a live map (Leaflet + OpenStreetMap)
+backend/                             ← Node/Express + Socket.IO API that both
+                                        of the above talk to
+```
+
+**Processing in between:** the patient app pushes GPS readings to the backend over
+REST (`POST /api/location/ping`); the backend stores the latest point and also
+broadcasts it over a Socket.IO room (`patient:<id>`) so any connected caregiver
+dashboard updates instantly, without polling.
+
+### Consent model
+- Only the **patient's own token** can turn sharing on/off (`POST /api/patients/sharing`).
+  A caregiver can never enable tracking themselves.
+- A caregiver is only linked after the patient hands them a **6-digit pairing code**
+  shown in Settings. Nobody can add themselves without that code.
+- The patient can **revoke** any caregiver's access at any time from Settings — that
+  caregiver immediately loses the ability to read location data (server-side check,
+  not just hidden in the UI).
+- Turning sharing off stops new pings from being accepted or broadcast — it doesn't
+  just hide the map on the caregiver's screen.
+
+## Running it locally
+
+### 1. Backend
+```bash
+cd backend
+npm install
+cp .env.example .env
+npm start        # or: npm run dev  (with nodemon, auto-restart)
+```
+This starts the API + Socket.IO server at `http://localhost:4000`. It stores data in
+`backend/data/db.json` (created automatically on first run — a plain JSON file, fine
+for development, see "Going to production" below).
+
+### 2. Patient app
+Open `frontend/patient-app/index.html` directly in a browser (or serve it with any
+static server, e.g. `npx serve frontend/patient-app`). It talks to the backend at
+`http://localhost:4000` by default. To point it at a different backend URL, set this
+before the app's script runs:
+```html
+<script>window.MINDMITRA_API_BASE = 'https://your-backend.example.com';</script>
+```
+In the app: go to **Settings → Location sharing**, turn it on (the browser will ask
+for location permission), and copy the pairing code shown there.
+
+### 3. Caregiver dashboard
+Open `frontend/caregiver-dashboard/index.html` in a browser (a different device,
+tab, or browser profile works well for testing). Same `window.MINDMITRA_API_BASE`
+override applies here too. Enter the pairing code from step 2 to link, and the live
+map appears once the patient has a GPS fix.
+
+## API summary
+
+| Method | Path | Who calls it | What it does |
+|---|---|---|---|
+| POST | `/api/patients/register` | patient app, once | Creates the patient record, returns `token` + `pairingCode` |
+| GET | `/api/patients/me` | patient app | Own profile, sharing state, linked caregivers |
+| POST | `/api/patients/sharing` | patient app | Turns sharing on/off |
+| POST | `/api/patients/pairing-code/rotate` | patient app | Issues a fresh pairing code |
+| POST | `/api/caregivers/link` | caregiver dashboard | Links a caregiver using a pairing code |
+| DELETE | `/api/caregivers/:id` | patient app | Revokes one caregiver's access |
+| GET | `/api/caregivers/me` | caregiver dashboard | The caregiver's own linked-patient info |
+| POST | `/api/location/ping` | patient app | Pushes a new GPS reading (rejected if sharing is off) |
+| GET | `/api/location/current` | caregiver dashboard | Latest known point |
+| GET | `/api/location/history` | caregiver dashboard | Last ~50 points, for a trail on the map |
+
+All patient/caregiver routes expect `Authorization: Bearer <token>`.
+
+## Going to production
+
+This is a working starter, not a hardened deployment. Before using it with real
+patients, at minimum:
+- Replace the JSON file store (`backend/src/db.js`) with a real database.
+- Replace token-only auth with proper authentication (passwords/OTP + short-lived
+  tokens, refresh tokens, rate limiting on `/api/caregivers/link` so pairing codes
+  can't be brute-forced).
+- Serve everything over HTTPS/WSS only.
+- Add audit logging of who viewed a patient's location and when.
+- Review India's Digital Personal Data Protection Act (DPDP) requirements for
+  health-adjacent location data, since this handles sensitive personal information
+  about a potentially vulnerable user group.
